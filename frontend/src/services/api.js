@@ -1,8 +1,14 @@
 import axios from 'axios';
 
-let rawBase = (import.meta.env.VITE_API_URL || '/api').trim().replace(/\/+$/, '');
-if (rawBase.startsWith('http') && !rawBase.endsWith('/api')) {
-  rawBase = `${rawBase}/api`;
+let rawBase = import.meta.env.VITE_API_URL;
+
+if (!rawBase || rawBase === '/api') {
+  rawBase = 'https://harmony-project-zg1r.onrender.com/api';
+} else {
+  rawBase = rawBase.trim().replace(/\/+$/, '');
+  if (rawBase.startsWith('http') && !rawBase.endsWith('/api')) {
+    rawBase = `${rawBase}/api`;
+  }
 }
 
 const api = axios.create({

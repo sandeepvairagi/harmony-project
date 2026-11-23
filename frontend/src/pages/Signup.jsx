@@ -15,7 +15,6 @@ const Signup = () => {
     password: '',
     role: 'user',
     location: '',
-    yogaPreferences: '',
   });
 
   const handleSubmit = async (e) => {
@@ -23,9 +22,7 @@ const Signup = () => {
     const result = await dispatch(
       register({
         ...form,
-        yogaPreferences: form.yogaPreferences
-          ? form.yogaPreferences.split(',').map((s) => s.trim())
-          : [],
+        yogaPreferences: [],
       })
     );
     if (result.meta.requestStatus === 'fulfilled') navigate('/dashboard');
@@ -55,11 +52,6 @@ const Signup = () => {
               <option value="instructor">Yoga Instructor</option>
             </select>
           </div>
-          <Input
-            label="Yoga interests (comma separated)"
-            value={form.yogaPreferences}
-            onChange={(e) => setForm({ ...form, yogaPreferences: e.target.value })}
-          />
           <Button type="submit" loading={loading} className="w-full">Create Account</Button>
         </form>
 
