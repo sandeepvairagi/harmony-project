@@ -77,13 +77,14 @@ const instructorSlice = createSlice({
       .addCase(fetchInstructors.pending, (state) => { state.loading = true; })
       .addCase(fetchInstructors.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload.data;
-        state.total = action.payload.total;
-        state.pages = action.payload.pages;
-        state.page = action.payload.page;
+        state.list = Array.isArray(action.payload?.data) ? action.payload.data : [];
+        state.total = action.payload?.total || 0;
+        state.pages = action.payload?.pages || 1;
+        state.page = action.payload?.page || 1;
       })
       .addCase(fetchInstructors.rejected, (state, action) => {
         state.loading = false;
+        state.list = [];
         state.error = action.payload;
       })
       .addCase(fetchFeatured.pending, (state) => {
@@ -91,10 +92,11 @@ const instructorSlice = createSlice({
       })
       .addCase(fetchFeatured.fulfilled, (state, action) => {
         state.featuredLoading = false;
-        state.featured = action.payload;
+        state.featured = Array.isArray(action.payload) ? action.payload : [];
       })
       .addCase(fetchFeatured.rejected, (state, action) => {
         state.featuredLoading = false;
+        state.featured = [];
         state.error = action.payload;
       })
       .addCase(fetchInstructor.pending, (state) => {

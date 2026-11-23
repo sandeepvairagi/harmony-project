@@ -116,12 +116,12 @@ const ExploreInstructors = () => {
         <div className="flex-1">
           {loading ? (
             <SkeletonList />
-          ) : list.length === 0 ? (
+          ) : (!list || list.length === 0) ? (
             <p className="text-center text-sage-500 py-20">No instructors found. Try adjusting filters.</p>
           ) : (
             <>
               <div className="grid md:grid-cols-2 gap-6">
-                {list.map((inst) => (
+                {(list || []).map((inst) => (
                   <InstructorCard key={inst._id} instructor={inst} />
                 ))}
               </div>

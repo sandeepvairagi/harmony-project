@@ -124,13 +124,13 @@ const LandingPage = () => {
           </div>
           {featuredLoading ? (
             <SkeletonList count={3} />
-          ) : featured.length === 0 ? (
+          ) : (!featured || featured.length === 0) ? (
             <p className="text-center text-sage-500 py-8">
-              No instructors available yet. Run <code className="text-sm bg-sage-100 dark:bg-sage-700 px-2 py-1 rounded">npm run seed</code> in the backend folder.
+              No instructors available yet.
             </p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featured.map((inst) => (
+              {(featured || []).map((inst) => (
                 <InstructorCard key={inst._id} instructor={inst} />
               ))}
             </div>
