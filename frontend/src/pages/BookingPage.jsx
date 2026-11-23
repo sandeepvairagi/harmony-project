@@ -26,6 +26,12 @@ const BookingPage = () => {
   }, [dispatch, instructorId]);
 
   useEffect(() => {
+    if (current?.yogaTypes?.length && !yogaType) {
+      setYogaType(current.yogaTypes[0]);
+    }
+  }, [current, yogaType]);
+
+  useEffect(() => {
     if (selectedDate) {
       dispatch(checkAvailability({ instructorId, date: selectedDate }));
     }

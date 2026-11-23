@@ -19,28 +19,48 @@ export const checkAvailability = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Date is required' });
     }
 
-    const sessionDate = new Date(date);
-    sessionDate.setHours(0, 0, 0, 0);
+    const targetDate = new Date(date);
+    const startOfDay = new Date(targetDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(targetDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const minRange = new Date(startOfDay.getTime() - 14 * 60 * 60 * 1000);
+    const maxRange = new Date(endOfDay.getTime() + 14 * 60 * 60 * 1000);
 
     const schedule = await Schedule.findOne({
       instructor: instructorId,
-      date: sessionDate,
+      date: { $gte: minRange, $lte: maxRange },
       isAvailable: true,
     });
 
     const bookedSlots = await Booking.find({
       instructor: instructorId,
-      sessionDate,
+      sessionDate: { $gte: minRange, $lte: maxRange },
       status: { $in: ['pending', 'confirmed'] },
     }).select('startTime endTime');
 
     const bookedTimes = bookedSlots.map((b) => b.startTime);
-    const availableSlots =
-      schedule?.slots.filter((s) => !s.isBooked && !bookedTimes.includes(s.startTime)) || [];
+
+    const defaultSlots = [
+      { startTime: '07:00', endTime: '08:00', isBooked: false },
+      { startTime: '09:00', endTime: '10:00', isBooked: false },
+      { startTime: '11:00', endTime: '12:00', isBooked: false },
+      { startTime: '14:00', endTime: '15:00', isBooked: false },
+      { startTime: '17:00', endTime: '18:00', isBooked: false },
+      { startTime: '19:00', endTime: '20:00', isBooked: false },
+    ];
+
+    const sourceSlots =
+      schedule?.slots && schedule.slots.length > 0 ? schedule.slots : defaultSlots;
+
+    const availableSlots = sourceSlots.filter(
+      (s) => !s.isBooked && !bookedTimes.includes(s.startTime)
+    );
 
     res.json({
       success: true,
-      date: sessionDate,
+      date: startOfDay,
       slots: availableSlots,
       hasSchedule: !!schedule,
     });
@@ -62,12 +82,18 @@ export const createBooking = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Instructor not found' });
     }
 
-    const date = new Date(sessionDate);
-    date.setHours(0, 0, 0, 0);
+    const targetDate = new Date(sessionDate);
+    const startOfDay = new Date(targetDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(targetDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const minRange = new Date(startOfDay.getTime() - 14 * 60 * 60 * 1000);
+    const maxRange = new Date(endOfDay.getTime() + 14 * 60 * 60 * 1000);
 
     const conflict = await Booking.findOne({
       instructor: instructorId,
-      sessionDate: date,
+      sessionDate: { $gte: minRange, $lte: maxRange },
       startTime,
       status: { $in: ['pending', 'confirmed'] },
     });
@@ -76,7 +102,11 @@ export const createBooking = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Time slot no longer available' });
     }
 
-    const schedule = await Schedule.findOne({ instructor: instructorId, date });
+    let schedule = await Schedule.findOne({
+      instructor: instructorId,
+      date: { $gte: minRange, $lte: maxRange },
+    });
+
     if (schedule) {
       const slot = schedule.slots.find((s) => s.startTime === startTime);
       if (slot) slot.isBooked = true;
