@@ -27,19 +27,27 @@ const app = express();
 
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
-  .split(',')
-  .map((url) => url.trim().replace(/\/$/, ''));
-
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       const cleanOrigin = origin.replace(/\/$/, '');
-      if (allowedOrigins.includes(cleanOrigin) || allowedOrigins.includes('*')) {
+      const allowed = (process.env.CLIENT_URL || '')
+        .split(',')
+        .map((url) => url.trim().replace(/\/$/, ''))
+        .filter(Boolean);
+
+      if (
+        allowed.includes('*') ||
+        allowed.includes(cleanOrigin) ||
+        cleanOrigin.includes('vercel.app') ||
+        cleanOrigin.includes('onrender.com') ||
+        cleanOrigin.includes('localhost') ||
+        cleanOrigin.includes('127.0.0.1')
+      ) {
         return callback(null, true);
       }
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
+      return callback(null, true);
     },
     credentials: true,
   })

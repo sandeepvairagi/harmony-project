@@ -11,7 +11,8 @@ export const register = createAsyncThunk(
       toast.success('Welcome to Harmony Bookings!');
       return data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Registration failed');
+      const msg = err.response?.data?.message || err.message || 'Registration failed';
+      return rejectWithValue(msg);
     }
   }
 );
@@ -25,7 +26,8 @@ export const login = createAsyncThunk(
       toast.success('Welcome back!');
       return data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Login failed');
+      const msg = err.response?.data?.message || err.message || 'Login failed';
+      return rejectWithValue(msg);
     }
   }
 );
