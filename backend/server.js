@@ -55,6 +55,10 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Harmony Bookings API is live! Endpoints available at /api' });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Harmony Bookings API is running' });
 });
