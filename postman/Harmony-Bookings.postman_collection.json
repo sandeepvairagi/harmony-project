@@ -1,0 +1,132 @@
+{
+  "info": {
+    "name": "Harmony Bookings API",
+    "description": "REST API collection for Harmony Bookings yoga platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@harmony.com\",\n  \"password\": \"test123\",\n  \"location\": \"New York\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": ["var json = pm.response.json();", "if (json.token) pm.collectionVariables.set('token', json.token);"]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@harmony.com\",\n  \"password\": \"user123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Instructors",
+      "item": [
+        {
+          "name": "List Instructors",
+          "request": { "method": "GET", "url": "{{baseUrl}}/instructors?page=1&limit=12" }
+        },
+        {
+          "name": "Featured",
+          "request": { "method": "GET", "url": "{{baseUrl}}/instructors/featured" }
+        },
+        {
+          "name": "Get Instructor",
+          "request": { "method": "GET", "url": "{{baseUrl}}/instructors/:id" }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Check Availability",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/bookings/availability?instructorId=INSTRUCTOR_ID&date=2026-05-25"
+          }
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/bookings",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"instructorId\": \"INSTRUCTOR_ID\",\n  \"sessionDate\": \"2026-05-25\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"10:00\",\n  \"yogaType\": \"Vinyasa\"\n}"
+            }
+          }
+        },
+        {
+          "name": "My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/bookings/my"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/admin/dashboard"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Yoga Recommendations",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/ai/recommend",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"goals\": [\"stress\", \"flexibility\"],\n  \"preferences\": [\"Vinyasa\"]\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

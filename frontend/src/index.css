@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --color-sage-50: #f6f7f4;
+  --color-sage-100: #e8ebe3;
+  --color-sage-200: #d1d7c7;
+  --color-sage-300: #b3bda3;
+  --color-sage-400: #8f9d7a;
+  --color-sage-500: #6b7d56;
+  --color-sage-600: #526342;
+  --color-sage-700: #404e34;
+  --color-sage-800: #353f2d;
+  --color-sage-900: #2d3528;
+  --color-coral-400: #e8a598;
+  --color-coral-500: #d4847a;
+  --color-coral-600: #b86a60;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  @apply bg-sage-50 text-sage-900 antialiased;
+}
+
+.dark body,
+.dark {
+  @apply bg-sage-900 text-sage-100;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 4s ease-in-out infinite;
+}
